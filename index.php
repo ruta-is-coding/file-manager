@@ -11,6 +11,8 @@ Kiekvienoje direktorijoje turi būti galimybė sukurti naują failą ARBA naują
  <?php
 $path=isset($_GET['path'])?$_GET['path']:".";
 $content=scandir($path);
+unset($content[0]);
+if($path===".") unset($content[1]);
  ?>
 
 <!DOCTYPE html>
@@ -54,7 +56,8 @@ $content=scandir($path);
                 $item_name=$item_info['basename'];
                 //patikrinimas, ar item yra folderis
                 $isFolder=is_dir($item)?"Folder":"";
-                if($item_name !== "." AND $item_name !== "..")
+                
+                // if($item_name !== "." AND $item_name !== "..")
                  echo "<tr>
                  <td> <input type='checkbox'></td>
                  <td>
