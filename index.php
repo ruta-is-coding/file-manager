@@ -9,7 +9,8 @@ Kiekvienoje direktorijoje turi būti galimybė sukurti naują failą ARBA naują
  -->
 
  <?php
-$content=scandir(".");
+$path=isset($_GET['path'])?$_GET['path']:".";
+$content=scandir($path);
  ?>
 
 <!DOCTYPE html>
@@ -57,7 +58,7 @@ $content=scandir(".");
                  echo "<tr>
                  <td> <input type='checkbox'></td>
                  <td>
-                 <a href='http://localhost/file-manager/$item_name'>$item_name</a></td>
+                 <a href='?path=$path/$item_name'>$item_name</a></td>
                  <td>
                  $isFolder
                  </td>
