@@ -10,8 +10,11 @@ Kiekvienoje direktorijoje turi būti galimybė sukurti naują failą ARBA naują
 
  <?php
 $path=isset($_GET['path'])?$_GET['path']:".";
+//skenuojama direktorija
 $content=scandir($path);
+//pašalinama . direktorija iš masyvo
 unset($content[0]);
+//pašalinama .. direktorija iš masyvo, kai esame pradiniame puslapyje
 if($path===".") unset($content[1]);
  ?>
 
@@ -54,14 +57,56 @@ if($path===".") unset($content[1]);
             foreach($content as $item){
                 $item_info=pathinfo($item);
                 $item_name=$item_info['basename'];
-                //patikrinimas, ar item yra folderis
-                $isFolder=is_dir($item)?"Folder":"";
+                //patikrinimas ar failas turi extension
+                if(array_key_exists('extension', $item_info)){
+                    //ikonos klasės priskyrimas
+                    //VISOMS IKONOMS TA PATI KLASĖ PRISKIRIAMA
+                    if($item_info['extension'] == "git"){
+                        $file_icon_class="bi bi-github";
+                    } elseif($item_info['extension'] == "php"){
+                        $file_icon_class="bi bi-filetype-php";
+                    } elseif($item_info['extension'] == "txt"){
+                        $file_icon_class="bi bi-file-text";
+                    } elseif($item_info['extension'] == "jpeg"){
+                        $file_icon_class="bi bi-image";
+                    } elseif($item_info['extension'] == "mp4"){
+                        $file_icon_class="bi bi-play-circle";
+                    } elseif($item_info['extension'] == "mp3"){
+                        $file_icon_class="bi bi-file-earmark-music";
+                    } elseif($item_name===".."){
+                        $file_icon_class="bi bi-arrow-up";
+                    } else{
+                        $file_icon_class="";
+                    }
+                } else{
+                    $file_icon_class="bi bi-folder";
+                }
                 
-                // if($item_name !== "." AND $item_name !== "..")
+                //patikrinimas, ar item yra folderis
+                //NE VISUR VEIKIA FILESIZE!!!!!
+                $isFolder=is_dir($item)?"Folder":
+                // filesize($item)." B";
+                "";
+
+                //Perėjimui į aukštesnę kategoriją
+                if($item_name===".." AND $path !=="."){
+                    // $link="<a href='?path=$dir'>
+                    $link = "<a href='?path=" . dirname($path) . "'>
+                    <i class='$file_icon_class'></i>
+                    $item_name
+                    </a>";
+                } else{
+                    $link="<a href='?path=$path/$item_name'>
+                    <i class='$file_icon_class'></i>
+                    $item_name
+                    </a>";
+                }
+                
                  echo "<tr>
                  <td> <input type='checkbox'></td>
                  <td>
-                 <a href='?path=$path/$item_name'>$item_name</a></td>
+                 $link
+                 </td>
                  <td>
                  $isFolder
                  </td>
