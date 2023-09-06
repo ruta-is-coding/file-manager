@@ -58,7 +58,7 @@ if($path===".") unset($content[1]);
                 $item_info=pathinfo($item);
                 $item_name=$item_info['basename'];
                 //patikrinimas ar failas turi extension
-                if(array_key_exists('extension', $item_info)){
+                    if(array_key_exists('extension', $item_info)){
                     //ikonos klasės priskyrimas
                     //VISOMS IKONOMS TA PATI KLASĖ PRISKIRIAMA
                     if($item_info['extension'] == "git"){
@@ -95,7 +95,7 @@ if($path===".") unset($content[1]);
                 } else{
                     $filesize=round(filesize($realfile))." B";
                 }
-                
+
                 //patikrinimas ar direktorija yra .. (up)
                 $isUp=($item_name==="..")?"":"Folder";
                 //patikrinimas, ar item yra folderis
