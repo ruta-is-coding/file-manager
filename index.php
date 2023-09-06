@@ -82,11 +82,24 @@ if($path===".") unset($content[1]);
                     $file_icon_class="bi bi-folder";
                 }
                 
+                // tikrasis failo kelias
+                $realfile="$path/$item_name";
+                //failo dydis
+                $filesize=filesize($realfile);
+                //failo dydžio patikrinimas
+                if($filesize>=1048576){
+                    $filesize=round($filesize/1024/1024)." MB";
+                }
+                elseif($filesize>=1024){
+                    $filesize=round($filesize/1024)." KB";
+                } else{
+                    $filesize=round(filesize($realfile))." B";
+                }
+                
+                //patikrinimas ar direktorija yra .. (up)
+                $isUp=($item_name==="..")?"":"Folder";
                 //patikrinimas, ar item yra folderis
-                //NE VISUR VEIKIA FILESIZE!!!!!
-                $isFolder=is_dir($item)?"Folder":
-                // filesize($item)." B";
-                "";
+                $isFolder=is_dir($realfile)?$isUp: $filesize;
 
                 //Perėjimui į aukštesnę kategoriją
                 if($item_name===".." AND $path !=="."){
