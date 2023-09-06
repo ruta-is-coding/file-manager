@@ -7,7 +7,6 @@ Kiekvienos direktorijos viduje turi būti nuoroda grįžimui atgal į aukštesni
 Kiekvienoje direktorijoje turi būti galimybė sukurti naują failą ARBA naują folderį.
 ...
  -->
-
  <?php
 //ar path parametras egzistuoja
 $path=isset($_GET['path'])?$_GET['path']:".";
@@ -16,6 +15,16 @@ $content=scandir($path);
 //pašalinama . direktorija ir .. direktorija iš masyvo, kai esame pradiniame puslapyje
 unset($content[0]);
 if($path===".") unset($content[1]);
+
+//forma atvaizduojama, kai action parametras yra edit
+if(isset($_GET['action']) AND ($_GET['action'])==="edit" AND isset($_GET['item'])){
+    $form="<form method='POST' class='input-group my-2' style='width: 50%'>
+    <input type='text' class='form-control' name='filename' placeholder='Enter file name'/>
+    <button class='btn btn-success'>Save</button>
+    </form>";
+} else{
+    $form="";
+}
  ?>
 
 <!DOCTYPE html>
@@ -38,6 +47,9 @@ if($path===".") unset($content[1]);
 </head>
 <body>
     <div class="container pt-5">
+    <div class="d-flex justify-content-end">
+        <a href="#" class="btn btn-primary mb-3">New Item</a>
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -46,9 +58,6 @@ if($path===".") unset($content[1]);
                 </th>
                 <th>Name</th>
                 <th>Size</th>
-                <th>Modified</th>
-                <th>Perms</th>
-                <th>Owner</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -103,19 +112,30 @@ if($path===".") unset($content[1]);
                     $item_name
                     </a>";
                 }
-                
+
+                //patikriname, ar gavome duomenis iš redagavimo formos ir pervadiname item
+                if(isset($_POST['filename'])){
+                    rename($_GET['item'], $_POST['filename']);
+                    header('Location: ./');
+                }
+
                  echo "<tr>
                  <td> <input type='checkbox'></td>
                  <td>
                  $link
+                 $form                 
                  </td>
                  <td>
                  $isFolder
                  </td>
-                 <td></td>
-                 <td></td>
-                 <td></td>
-                 <td></td>
+                 <td>
+                 <a href='?action=edit&item=$item_name'>
+                 <i class='bi bi-pencil-square'></i>
+                 </a>
+                 <a href='?action=upload' class='ms-2'>
+                 <i class='bi bi-upload'></i>
+                 </a>
+                 </td>
                  </tr>";
                 }
             ?>
