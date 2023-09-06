@@ -9,12 +9,12 @@ Kiekvienoje direktorijoje turi būti galimybė sukurti naują failą ARBA naują
  -->
 
  <?php
+//ar path parametras egzistuoja
 $path=isset($_GET['path'])?$_GET['path']:".";
-//skenuojama direktorija
+//skenuojama path direktorija
 $content=scandir($path);
-//pašalinama . direktorija iš masyvo
+//pašalinama . direktorija ir .. direktorija iš masyvo, kai esame pradiniame puslapyje
 unset($content[0]);
-//pašalinama .. direktorija iš masyvo, kai esame pradiniame puslapyje
 if($path===".") unset($content[1]);
  ?>
 
@@ -55,29 +55,22 @@ if($path===".") unset($content[1]);
         <tbody>
             <?php
             foreach($content as $item){
+                //item informacija ir pavadinimas
                 $item_info=pathinfo($item);
                 $item_name=$item_info['basename'];
+
                 //patikrinimas ar failas turi extension
-                    if(array_key_exists('extension', $item_info)){
-                    //ikonos klasės priskyrimas
-                    //VISOMS IKONOMS TA PATI KLASĖ PRISKIRIAMA
-                    if($item_info['extension'] == "git"){
-                        $file_icon_class="bi bi-github";
-                    } elseif($item_info['extension'] == "php"){
-                        $file_icon_class="bi bi-filetype-php";
-                    } elseif($item_info['extension'] == "txt"){
-                        $file_icon_class="bi bi-file-text";
-                    } elseif($item_info['extension'] == "jpeg"){
-                        $file_icon_class="bi bi-image";
-                    } elseif($item_info['extension'] == "mp4"){
-                        $file_icon_class="bi bi-play-circle";
-                    } elseif($item_info['extension'] == "mp3"){
-                        $file_icon_class="bi bi-file-earmark-music";
-                    } elseif($item_name===".."){
-                        $file_icon_class="bi bi-arrow-up";
-                    } else{
-                        $file_icon_class="";
-                    }
+                if(array_key_exists('extension', $item_info)){
+
+                //ikonos klasės priskyrimas
+                $file_icon_class=($item_info['extension'] == "git")?"bi bi-github":
+                (($item_info['extension'] == "php")?"bi bi-filetype-php":
+                (($item_info['extension'] == "txt")?"bi bi-file-text":
+                (($item_info['extension'] == "jpeg")?"bi bi-image":
+                (($item_info['extension'] == "mp4")?"bi bi-play-circle":
+                (($item_info['extension'] == "mp3")?"bi bi-file-earmark-music":
+                (($item_name==="..")?"bi bi-arrow-up":
+                ""))))));
                 } else{
                     $file_icon_class="bi bi-folder";
                 }
@@ -87,21 +80,17 @@ if($path===".") unset($content[1]);
                 //failo dydis
                 $filesize=filesize($realfile);
                 //failo dydžio patikrinimas
-                if($filesize>=1048576){
-                    $filesize=round($filesize/1024/1024)." MB";
-                }
-                elseif($filesize>=1024){
-                    $filesize=round($filesize/1024)." KB";
-                } else{
-                    $filesize=round(filesize($realfile))." B";
-                }
+                $filesize=($filesize>=1048576)?(round($filesize/1024/1024)." MB"):
+                (($filesize>=1024)?(round($filesize/1024)." KB"):
+                ($filesize=round(filesize($realfile))." B"));
 
-                //patikrinimas ar direktorija yra .. (up)
+                //patikrinimas, ar direktorija yra ".."
                 $isUp=($item_name==="..")?"":"Folder";
-                //patikrinimas, ar item yra folderis
+                //patikrinimas, ar tai yra folderis. Jei ne, prirašomas dydis.
                 $isFolder=is_dir($realfile)?$isUp: $filesize;
 
-                //Perėjimui į aukštesnę kategoriją
+                //Nuoroda perėjimui į aukštesnę kategoriją
+                //Nuorodos direktorijoms
                 if($item_name===".." AND $path !=="."){
                     // $link="<a href='?path=$dir'>
                     $link = "<a href='?path=" . dirname($path) . "'>
