@@ -22,7 +22,6 @@ if (isset($_GET['action']) and ($_GET['action']) === "edit" and isset($_GET['ite
     <input type='text' class='form-control' name='filename' placeholder='Enter file name'/>
     <button class='btn btn-success'>Save</button>
     </form>";
-    print_r($_GET);
 } else {
     $form = "";
 }
@@ -51,6 +50,10 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
             color: black;
             text-decoration: none;
         }
+
+        .container {
+            max-width: 1024px;
+        }
     </style>
 </head>
 
@@ -62,7 +65,7 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 30px">
+                    <th style="width: 30px" class="px-3">
                         <input type="checkbox" onclick="selectAll(event)" data-select>
                     </th>
                     <th>Name</th>
@@ -77,22 +80,23 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
                     $item_info = pathinfo($item);
                     $item_name = $item_info['basename'];
 
-                    //patikrinimas ar failas turi extension
-                    if (array_key_exists('extension', $item_info)) {
-
-                        //ikonos klasės priskyrimas
-                        $file_icon_class = ($item_info['extension'] == "git") ? "bi bi-github" : (($item_info['extension'] == "php") ? "bi bi-filetype-php" : (($item_info['extension'] == "txt") ? "bi bi-file-text" : (($item_info['extension'] == "jpeg" or $item_info['extension'] == "jpg") ? "bi bi-image" : (($item_info['extension'] == "mp4") ? "bi bi-play-circle" : (($item_info['extension'] == "mp3") ? "bi bi-file-earmark-music" : (($item_name === "..") ? "bi bi-arrow-up" :
-                            ""))))));
-                    } else {
-                        $file_icon_class = "bi bi-folder";
-                    }
-
                     // tikrasis failo kelias
                     $realfile = "$path/$item_name";
                     //failo dydis
                     $filesize = filesize($realfile);
                     //failo dydžio patikrinimas
                     $filesize = ($filesize >= 1048576) ? (round($filesize / 1024 / 1024) . " MB") : (($filesize >= 1024) ? (round($filesize / 1024) . " KB") : ($filesize = round(filesize($realfile)) . " B"));
+
+                    //patikrinimas ar failas turi extension
+                    if (array_key_exists('extension', $item_info)) {
+
+                        //extension patikrinimas ir ikonos klasės priskyrimas
+                        $file_icon_class = ($item_info['extension'] == "git") ? "bi bi-github" : (($item_info['extension'] == "php") ? "bi bi-filetype-php" : (($item_info['extension'] == "pdf") ? "bi bi-file-earmark-pdf-fill" : (($item_info['extension'] == "txt") ? "bi bi-file-text" : (($item_info['extension'] == "odt") ? "bi bi-file-earmark-text" : (($item_info['extension'] == "jpeg" or $item_info['extension'] == "jpg") ? "bi bi-image" : (($item_info['extension'] == "gif") ? "bi bi-filetype-gif" : (($item_info['extension'] == "mp4") ? "bi bi-play-circle" : (($item_info['extension'] == "mp3") ? "bi bi-file-earmark-music" : (($item_info['extension'] == "pptx") ? "bi bi-filetype-pptx" : (($item_name === "..") ? "bi bi-arrow-up" : ""))))))))));
+                    } else if (is_dir($realfile)) {
+                        $file_icon_class = "bi bi-folder";
+                    } else {
+                        $file_icon_class = "bi bi-question-lg";
+                    }
 
                     //patikrinimas, ar direktorija yra ".."
                     $isUp = ($item_name === "..") ? "" : "Folder";
@@ -124,7 +128,7 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
                     }
 
                     $result = "<tr>
-                 <td>
+                 <td class='px-3'>
                  <input type='checkbox' value='$item_name' name='id[]'>
                  </td>
                  <td>
@@ -150,6 +154,7 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
                 ?>
             </tbody>
         </table>
+        <button class="btn mt-2 border border-black" onclick="selectAll(event)">Select all</button>
     </div>
 
     <script>
@@ -159,6 +164,11 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
             document.querySelectorAll('input[type="checkbox"]').forEach(el => {
                 el.checked = !el.checked;
             })
+
+            //KAIP ĮKELTI CHECKBOX'Ų FORMĄ, JEIGU JAU YRA VIDUJE EDITINIM'O FORMA?
+            // document.querySelectorAll('input[name="id[]"]').forEach(el => {
+            //     console.log(el.value);
+            // })
         }
     </script>
 </body>
