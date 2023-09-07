@@ -75,7 +75,7 @@ if(isset($_GET['action']) AND ($_GET['action'])==="edit" AND isset($_GET['item']
                 $file_icon_class=($item_info['extension'] == "git")?"bi bi-github":
                 (($item_info['extension'] == "php")?"bi bi-filetype-php":
                 (($item_info['extension'] == "txt")?"bi bi-file-text":
-                (($item_info['extension'] == "jpeg")?"bi bi-image":
+                (($item_info['extension'] == "jpeg" OR $item_info['extension'] == "jpg")?"bi bi-image":
                 (($item_info['extension'] == "mp4")?"bi bi-play-circle":
                 (($item_info['extension'] == "mp3")?"bi bi-file-earmark-music":
                 (($item_name==="..")?"bi bi-arrow-up":
@@ -115,28 +115,31 @@ if(isset($_GET['action']) AND ($_GET['action'])==="edit" AND isset($_GET['item']
 
                 //patikriname, ar gavome duomenis iš redagavimo formos ir pervadiname item
                 if(isset($_POST['filename'])){
-                    rename($_GET['item'], $_POST['filename']);
-                    header('Location: ./');
+                    rename($realfile, $path.'/'.$_POST['filename']);
+                    header("Location: ./");
                 }
 
-                 echo "<tr>
+                 $result = "<tr>
                  <td> <input type='checkbox'></td>
                  <td>
-                 $link
-                 $form                 
+                 $link";
+                 $result .= (isset($_GET['item']) AND $item === $_GET['item']) ? $form : '';
+                 $result .= "             
                  </td>
                  <td>
                  $isFolder
-                 </td>
+                 </td> 
                  <td>
-                 <a href='?action=edit&item=$item_name'>
+                 <a href='?action=edit&item=$item_name&path=$path'>
                  <i class='bi bi-pencil-square'></i>
                  </a>
                  <a href='?action=upload' class='ms-2'>
-                 <i class='bi bi-upload'></i>
+                 <i class='bi bi-trash3-fill'></i>
                  </a>
                  </td>
                  </tr>";
+
+                 echo $result;
                 }
             ?>
         </tbody>
