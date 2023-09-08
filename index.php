@@ -10,10 +10,13 @@ $content = scandir($path);
 if (isset($_POST['id'])) {
     $array = $_POST['id'];
     foreach ($array as $item) {
-        if (is_dir($item)) {
-            rmdir($item);
-        } else {
-            unlink($item);
+        //negalima trinti index.php failo
+        if ($item !== "./index.php") {
+            if (is_dir($item)) {
+                rmdir($item);
+            } else {
+                unlink($item);
+            }
         }
     }
     // perkrovimas
@@ -36,10 +39,13 @@ if (isset($_GET['action']) and ($_GET['action']) === "edit" and isset($_GET['ite
 //kai action parametras yra delete, ištriname failą
 if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['item'])) {
     $deleteitem = $path . '/' . $_GET['item'];
-    if (is_dir($deleteitem)) {
-        rmdir($deleteitem);
-    } else {
-        unlink($deleteitem);
+    //negalima trinti index.php failo
+    if ($deleteitem !== "./index.php") {
+        if (is_dir($deleteitem)) {
+            rmdir($deleteitem);
+        } else {
+            unlink($deleteitem);
+        }
     }
     // perkrovimas
     header("Location: ./");
