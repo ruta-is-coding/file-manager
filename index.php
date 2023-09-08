@@ -1,17 +1,24 @@
 <!-- Sukurkite failų valdymo sistemą.
 Veikiantis pavyzdys: https://tinyfilemanager.github.io/demo/
-
-Reikalavimai:
-Kiekvieną direktorija turi turėti priskirtą nuorodą patekimui į ją. 
-Kiekvienos direktorijos viduje turi būti nuoroda grįžimui atgal į aukštesnio lygio folderį.
-Kiekvienoje direktorijoje turi būti galimybė sukurti naują failą ARBA naują folderį.
-...
  -->
 <?php
 //ar path parametras egzistuoja
 $path = isset($_GET['path']) ? $_GET['path'] : ".";
 //skenuojama path direktorija
 $content = scandir($path);
+//masinis ištrynimas
+if (isset($_POST['id'])) {
+    $array = $_POST['id'];
+    foreach ($array as $item) {
+        if (is_dir($item)) {
+            rmdir($item);
+        } else {
+            unlink($item);
+        }
+    }
+    // perkrovimas
+    header("Location: ./");
+}
 //pašalinama . direktorija ir .. direktorija iš masyvo, kai esame pradiniame puslapyje
 unset($content[0]);
 if ($path === ".") unset($content[1]);
@@ -28,11 +35,14 @@ if (isset($_GET['action']) and ($_GET['action']) === "edit" and isset($_GET['ite
 
 //kai action parametras yra delete, ištriname failą
 if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['item'])) {
-    unlink($path . '/' . $_GET['item']);
-    //atnaujinimas
-    $content = scandir($path);
-    unset($content[0]);
-    if ($path === ".") unset($content[1]);
+    $deleteitem = $path . '/' . $_GET['item'];
+    if (is_dir($deleteitem)) {
+        rmdir($deleteitem);
+    } else {
+        unlink($deleteitem);
+    }
+    // perkrovimas
+    header("Location: ./");
 }
 ?>
 
@@ -59,82 +69,126 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
 
 <body>
     <div class="container pt-5">
-        <div class="d-flex justify-content-end">
-            <a href="#" class="btn btn-primary mb-3">New Item</a>
+        <div class="d-flex justify-content-between mb-3">
+            <button class="btn border border-black" onclick="selectAll(event)">Select all</button>
+            <button href="#" class="btn btn-primary">New Item</button>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width: 30px" class="px-3">
-                        <input type="checkbox" onclick="selectAll(event)" data-select>
-                    </th>
-                    <th>Name</th>
-                    <th>Size</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($content as $item) {
-                    //item informacija ir pavadinimas
-                    $item_info = pathinfo($item);
-                    $item_name = $item_info['basename'];
+        <!-- jeigu nėra užklausos parametro action, atvaizduojame formos atsidarantį elementą -->
+        <?php
+        if (!isset($_GET['action'])) :
+        ?>
+            <form method="post">
+            <?php endif; ?>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 30px" class="px-3">
+                            <input type="checkbox" onclick="selectAll(event)" data-select>
+                        </th>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($content as $item) {
+                        //item informacija, pavadinimas, tikrasis failo kelias, failo dydis
+                        $item_info = pathinfo($item);
+                        $item_name = $item_info['basename'];
+                        $realfile = "$path/$item_name";
+                        $filesize = filesize($realfile);
+                        //failo dydžio patikrinimas
+                        $filesize = ($filesize >= 1048576) ? (round($filesize / 1024 / 1024) . " MB") : (($filesize >= 1024) ? (round($filesize / 1024) . " KB") : ($filesize = round(filesize($realfile)) . " B"));
 
-                    // tikrasis failo kelias
-                    $realfile = "$path/$item_name";
-                    //failo dydis
-                    $filesize = filesize($realfile);
-                    //failo dydžio patikrinimas
-                    $filesize = ($filesize >= 1048576) ? (round($filesize / 1024 / 1024) . " MB") : (($filesize >= 1024) ? (round($filesize / 1024) . " KB") : ($filesize = round(filesize($realfile)) . " B"));
 
-                    //patikrinimas ar failas turi extension
-                    if (array_key_exists('extension', $item_info)) {
+                        //patikrinimas ar item turi extension
+                        if (array_key_exists('extension', $item_info)) {
+                            //extension patikrinimas ir ikonos klasės priskyrimas
+                            switch ($item_info['extension']) {
+                                case 'git':
+                                    $file_icon_class = 'bi bi-github';
+                                    break;
+                                case 'php':
+                                    $file_icon_class = 'bi bi-filetype-php';
+                                    break;
+                                case 'pdf':
+                                    $file_icon_class = 'bi bi-file-earmark-pdf-fill';
+                                    break;
+                                case 'txt':
+                                    $file_icon_class = 'bi bi-file-text';
+                                    break;
+                                case 'odt':
+                                    $file_icon_class = 'bi bi-file-earmark-text';
+                                    break;
+                                case 'gif':
+                                    $file_icon_class = 'bi bi-filetype-gif';
+                                    break;
+                                case 'mp4':
+                                    $file_icon_class = 'bi bi-play-circle';
+                                    break;
+                                case 'mp3':
+                                    $file_icon_class = 'bi bi-file-earmark-music';
+                                    break;
+                                case 'pptx':
+                                    $file_icon_class = 'bi bi-filetype-pptx';
+                                    break;
+                                case ('jpeg' or 'jpg'):
+                                    $file_icon_class = 'bi bi-image';
+                                    break;
+                            }
+                            switch ($item_name) {
+                                case '..':
+                                    $file_icon_class = 'bi bi-arrow-up';
+                                    $isUp = "";
+                                    break;
+                            }
+                            //patikrinimas ar item yra direktorija (neturi extension)
+                        } else if (is_dir($realfile)) {
+                            $file_icon_class = "bi bi-folder";
+                            // neatpažintas failo tipas
+                        } else {
+                            $file_icon_class = "bi bi-question-lg";
+                        }
 
-                        //extension patikrinimas ir ikonos klasės priskyrimas
-                        $file_icon_class = ($item_info['extension'] == "git") ? "bi bi-github" : (($item_info['extension'] == "php") ? "bi bi-filetype-php" : (($item_info['extension'] == "pdf") ? "bi bi-file-earmark-pdf-fill" : (($item_info['extension'] == "txt") ? "bi bi-file-text" : (($item_info['extension'] == "odt") ? "bi bi-file-earmark-text" : (($item_info['extension'] == "jpeg" or $item_info['extension'] == "jpg") ? "bi bi-image" : (($item_info['extension'] == "gif") ? "bi bi-filetype-gif" : (($item_info['extension'] == "mp4") ? "bi bi-play-circle" : (($item_info['extension'] == "mp3") ? "bi bi-file-earmark-music" : (($item_info['extension'] == "pptx") ? "bi bi-filetype-pptx" : (($item_name === "..") ? "bi bi-arrow-up" : ""))))))))));
-                    } else if (is_dir($realfile)) {
-                        $file_icon_class = "bi bi-folder";
-                    } else {
-                        $file_icon_class = "bi bi-question-lg";
-                    }
+                        //patikrinimas ar item yra ne ..
+                        if ($item_name !== "..") $isUp = "Folder";
+                        //patikrinimas, ar item yra direktorija. Jei ne, prirašomas dydis.
+                        $isFolder = is_dir($realfile) ? $isUp : $filesize;
 
-                    //patikrinimas, ar direktorija yra ".."
-                    $isUp = ($item_name === "..") ? "" : "Folder";
-                    //patikrinimas, ar tai yra folderis. Jei ne, prirašomas dydis.
-                    $isFolder = is_dir($realfile) ? $isUp : $filesize;
 
-                    //Nuoroda perėjimui į aukštesnę kategoriją
-                    //Nuorodos direktorijoms
-                    if ($item_name === ".." and $path !== ".") {
-                        // $link="<a href='?path=$dir'>
-                        $link = "<a href='?path=" . dirname($path) . "'>
-                    <i class='$file_icon_class'></i>
-                    $item_name
-                    </a>";
-                    } else {
-                        $link = "<a href='?path=$path/$item_name'>
-                    <i class='$file_icon_class'></i>
-                    $item_name
-                    </a>";
-                    }
+                        //Nuoroda perėjimui į aukštesnę kategoriją
+                        //Nuorodos direktorijoms
+                        if ($item_name === ".." and $path !== ".") {
+                            // $link="<a href='?path=$dir'>
+                            $link = "<a href='?path=" . dirname($path) . "'>
+                        <i class='$file_icon_class'></i>
+                        $item_name
+                        </a>";
+                        } else {
+                            $link = "<a href='?path=$path/$item_name'>
+                        <i class='$file_icon_class'></i>
+                        $item_name
+                        </a>";
+                        }
 
-                    //patikriname, ar gavome duomenis iš redagavimo formos ir pervadiname item
-                    if (isset($_POST['filename'])) {
-                        //pirmas parametras - senojo failo kelias
-                        //antras - naujo failo kelias
-                        rename($realfile, $path . '/' . $_POST['filename']);
-                        //redirektinimas į pradinį puslapį
-                        header("Location: ./");
-                    }
+                        //patikriname, ar gavome duomenis iš redagavimo formos ir pervadiname item
+                        if (isset($_POST['filename'])) {
+                            //pirmas parametras - senojo failo kelias
+                            //antras - naujo failo kelias
+                            rename($realfile, $path . '/' . $_POST['filename']);
+                            //redirektinimas į pradinį puslapį
+                            header("Location: ./");
+                        }
 
-                    $result = "<tr>
+                        $result = "<tr>
                  <td class='px-3'>
-                 <input type='checkbox' value='$item_name' name='id[]'>
+                 <input type='checkbox' value='$realfile' name='id[]'>
                  </td>
                  <td>
                  $link";
-                    $result .= (isset($_GET['item']) and $item === $_GET['item']) ? $form : '';
-                    $result .= "             
+                        $result .= (isset($_GET['item']) and $item === $_GET['item']) ? $form : '';
+                        $result .= "             
                  </td>
                  <td>
                  $isFolder
@@ -149,12 +203,19 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
                  </td>
                  </tr>";
 
-                    echo $result;
-                }
-                ?>
-            </tbody>
-        </table>
-        <button class="btn mt-2 border border-black" onclick="selectAll(event)">Select all</button>
+                        echo $result;
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <button class="btn btn-danger mt-2">Delete selected</button>
+            <!-- jeigu nėra užklausos parametro action, atvaizduojame formos užsidarantį elementą -->
+            <?php
+            if (!isset($_GET['action'])) :
+            ?>
+            </form>
+        <?php endif; ?>
+
     </div>
 
     <script>
@@ -164,11 +225,6 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
             document.querySelectorAll('input[type="checkbox"]').forEach(el => {
                 el.checked = !el.checked;
             })
-
-            //KAIP ĮKELTI CHECKBOX'Ų FORMĄ, JEIGU JAU YRA VIDUJE EDITINIM'O FORMA?
-            // document.querySelectorAll('input[name="id[]"]').forEach(el => {
-            //     console.log(el.value);
-            // })
         }
     </script>
 </body>
