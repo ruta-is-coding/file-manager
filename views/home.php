@@ -1,5 +1,4 @@
-<div class="d-flex justify-content-between mb-3">
-    <button class="btn border border-black" onclick="selectAll(event)">Select all</button>
+<div class="d-flex justify-content-end mb-3">
     <div class="d-flex gap-2">
         <a href="?page=new-item" class="btn btn-success">New Item</a>
         <a href="?page=new-folder" class="btn btn-warning">New Folder</a>
