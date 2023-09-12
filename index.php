@@ -50,6 +50,7 @@ if (isset($_GET['action']) and ($_GET['action']) === "edit" and isset($_GET['ite
     <input type='text' class='form-control' name='filename' placeholder='Enter file name'/>
     <button class='btn btn-success'>Save</button>
     </form>";
+    $oldFullPath = $_GET['path'] . '/' . $_GET['item'];
 } else {
     $form = "";
 }

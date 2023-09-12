@@ -112,8 +112,8 @@ if (!isset($_GET['action'])) :
                     if (isset($_POST['filename'])) {
                         //pirmas parametras - senojo failo kelias
                         //antras - naujo failo kelias
-                        rename($realfile, $path . '/' . $_POST['filename']);
-                        //redirektinimas į pradinį puslapį
+                        rename($oldFullPath, $path . '/' . $_POST['filename']);
+                        // //redirektinimas į pradinį puslapį
                         header('Location: ?path=' . $path);
                     }
 
@@ -130,7 +130,7 @@ if (!isset($_GET['action'])) :
                  $isFolder
                  </td> 
                  <td>
-                 <a href='?action=edit&item=$item&path=$path'>
+                 <a href='?action=edit&item=$item&path=$path&item=$item'>
                  <i class='bi bi-pencil-square'></i>
                  </a>
                  <a href='?action=delete&item=$item&path=$path' class='ms-2'>
