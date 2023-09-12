@@ -1,7 +1,12 @@
 <!-- Sukurkite failų valdymo sistemą.
-Veikiantis pavyzdys: https://tinyfilemanager.github.io/demo/
  -->
+
 <?php
+//naujo folderio sukūrimas
+// if (isset($_POST['folder-name'])) {
+//     $folderPath = $_POST['folder-name'];
+//     echo $folderPath;
+// }
 //ar path parametras egzistuoja
 $path = isset($_GET['path']) ? $_GET['path'] : ".";
 //skenuojama path direktorija
@@ -66,7 +71,7 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
         }
     }
     // perkrovimas
-    header("Location: ./");
+    header('Location: ?path=' . $path);
 }
 
 //puslapio query parametras
@@ -100,7 +105,10 @@ $page = isset($_GET['page']) ? $_GET['page'] : false;
         //routeris
         switch ($page) {
             case 'new-item':
-                include './views/upload.php';
+                include './views/upload-file.php';
+                break;
+            case 'new-folder':
+                include './views/create-folder.php';
                 break;
             default:
                 include './views/home.php';

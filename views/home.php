@@ -1,7 +1,12 @@
+<?php
+$path = isset($_GET['path']) ? $_GET['path'] : ".";
+?>
 <div class="d-flex justify-content-end mb-3">
     <div class="d-flex gap-2">
-        <a href="?page=new-item" class="btn btn-success">New Item</a>
-        <a href="?page=new-folder" class="btn btn-warning">New Folder</a>
+        <?php
+        echo '<a href="?page=new-item" class="btn btn-success">New Item</a>' .
+            '<a href="?page=new-folder&path=' . $path . '" class="btn btn-warning">New Folder</a>';
+        ?>
     </div>
 </div>
 <!-- jeigu nėra užklausos parametro action, atvaizduojame formos atsidarantį elementą -->
@@ -109,7 +114,7 @@ if (!isset($_GET['action'])) :
                         //antras - naujo failo kelias
                         rename($realfile, $path . '/' . $_POST['filename']);
                         //redirektinimas į pradinį puslapį
-                        header("Location: ./");
+                        header('Location: ?path=' . $path);
                     }
 
                     $result = "<tr>
