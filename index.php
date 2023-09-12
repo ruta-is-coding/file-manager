@@ -2,11 +2,6 @@
  -->
 
 <?php
-//naujo folderio sukūrimas
-// if (isset($_POST['folder-name'])) {
-//     $folderPath = $_POST['folder-name'];
-//     echo $folderPath;
-// }
 //ar path parametras egzistuoja
 $path = isset($_GET['path']) ? $_GET['path'] : ".";
 //skenuojama path direktorija
@@ -104,8 +99,8 @@ $page = isset($_GET['page']) ? $_GET['page'] : false;
         <?php
         //routeris
         switch ($page) {
-            case 'new-item':
-                include './views/upload-file.php';
+            case 'new-file':
+                include './views/create-file.php';
                 break;
             case 'new-folder':
                 include './views/create-folder.php';

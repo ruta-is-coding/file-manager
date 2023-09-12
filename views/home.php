@@ -4,7 +4,7 @@ $path = isset($_GET['path']) ? $_GET['path'] : ".";
 <div class="d-flex justify-content-end mb-3">
     <div class="d-flex gap-2">
         <?php
-        echo '<a href="?page=new-item" class="btn btn-success">New Item</a>' .
+        echo '<a href="?page=new-file&path=' . $path . '" class="btn btn-success">New File</a>' .
             '<a href="?page=new-folder&path=' . $path . '" class="btn btn-warning">New Folder</a>';
         ?>
     </div>
