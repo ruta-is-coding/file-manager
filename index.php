@@ -5,7 +5,7 @@
 //ar path parametras egzistuoja
 $path = isset($_GET['path']) ? $_GET['path'] : ".";
 //skenuojama path direktorija
-$content = scandir($path);
+$content = is_dir($path) ? scandir($path) : false;
 //pašalinama . ir .. direktorijos iš masyvo, kai esame pradiniame puslapyje
 unset($content[0]);
 if ($path === ".") unset($content[1]);
@@ -105,6 +105,9 @@ $page = isset($_GET['page']) ? $_GET['page'] : false;
                 break;
             case 'new-folder':
                 include './views/create-folder.php';
+                break;
+            case 'open-file':
+                include './views/open-file.php';
                 break;
             default:
                 include './views/home.php';

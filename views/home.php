@@ -94,13 +94,19 @@ if (!isset($_GET['action'])) :
 
 
                     //Nuoroda perėjimui į aukštesnę kategoriją
-                    //Nuorodos direktorijoms
                     if ($item === ".." and $path !== ".") {
                         // $link="<a href='?path=$dir'>
                         $link = "<a href='?path=" . dirname($path) . "'>
                         <i class='$file_icon_class'></i>
                         $item
                         </a>";
+                        //Nuorodos failams
+                    } elseif (array_key_exists('extension', $item_info)) {
+                        $link = "<a href='?page=open-file&file=$item&path=$realfile'>
+                        <i class='$file_icon_class'></i>
+                        $item
+                        </a>";
+                        //Nuorodos direktorijoms
                     } else {
                         $link = "<a href='?path=$path/$item'>
                         <i class='$file_icon_class'></i>
@@ -142,6 +148,7 @@ if (!isset($_GET['action'])) :
                     echo $result;
                 }
             }
+
             ?>
         </tbody>
     </table>
