@@ -102,7 +102,7 @@ if (!isset($_GET['action'])) :
                         </a>";
                         //Nuorodos failams
                     } elseif (array_key_exists('extension', $item_info)) {
-                        $link = "<a href='?page=open-file&file=$item&path=$realfile'>
+                        $link = "<a href='?action=download&path=$realfile'>
                         <i class='$file_icon_class'></i>
                         $item
                         </a>";

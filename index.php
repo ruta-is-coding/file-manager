@@ -55,6 +55,16 @@ if (isset($_GET['action']) and ($_GET['action']) === "edit" and isset($_GET['ite
     $form = "";
 }
 
+//failo atsisiuntimas
+if (isset($_GET['action']) and ($_GET['action']) === "download") {
+    $filePath = $_GET['path'];
+    header("Content-Description: File Transfer");
+    header("Content-Type: application/octet-stream");
+    header("Content-Disposition: attachment; filename=\"" . basename($filePath) . "\"");
+    readfile($filePath);
+    exit;
+}
+
 //kai action parametras yra delete, ištriname failą
 if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['item'])) {
     $deleteitem = $path . '/' . $_GET['item'];
@@ -105,9 +115,6 @@ $page = isset($_GET['page']) ? $_GET['page'] : false;
                 break;
             case 'new-folder':
                 include './views/create-folder.php';
-                break;
-            case 'open-file':
-                include './views/open-file.php';
                 break;
             default:
                 include './views/home.php';
