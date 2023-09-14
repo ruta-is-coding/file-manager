@@ -107,11 +107,19 @@ if (!isset($_GET['action'])) :
                         $item
                         </a>";
                         //Nuorodos direktorijoms
-                    } else {
+                    } else if (is_dir($realfile)) {
                         $link = "<a href='?path=$path/$item'>
                         <i class='$file_icon_class'></i>
                         $item
                         </a>";
+                        //Nežinomas formatas
+                    } else {
+                        $link = "<div>
+                        <i class='$file_icon_class'></i>
+                        <span>
+                        $item
+                        </span>
+                        </div>";
                     }
 
                     //patikriname, ar gavome duomenis iš redagavimo formos ir pervadiname item
