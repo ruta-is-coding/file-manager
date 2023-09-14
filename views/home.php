@@ -129,6 +129,7 @@ if (!isset($_GET['action'])) :
                         rename($oldFullPath, $path . '/' . $_POST['filename']);
                         // //redirektinimas į pradinį puslapį
                         header('Location: ?path=' . $path);
+                        exit;
                     }
 
                     $result = "<tr>

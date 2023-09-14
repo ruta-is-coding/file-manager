@@ -7,6 +7,7 @@ if (isset($_POST['file-name'])) {
     //funkcija naujo failo sukūrimui
     fopen($fullPath, 'w+');
     header('Location: ?path=' . $path);
+    exit;
 };
 ?>
 

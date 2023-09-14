@@ -36,6 +36,7 @@ function remove_recursively($arrayToDelete)
     }
     // perkrovimas
     header("Location: ./");
+    exit;
 }
 
 //masinis ištrynimas
@@ -78,6 +79,7 @@ if (isset($_GET['action']) and ($_GET['action']) === "delete" and isset($_GET['i
     }
     // perkrovimas
     header('Location: ?path=' . $path);
+    exit;
 }
 
 //puslapio query parametras

@@ -7,6 +7,7 @@ if (isset($_POST['folder-name'])) {
     echo $folderName;
     mkdir($fullPath);
     header('Location: ?path=' . $path);
+    exit;
 };
 ?>
 
