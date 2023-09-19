@@ -2,7 +2,6 @@
 
 ---
 
-Instructions:
 Sukurkite failų valdymo sistemą.
 Veikiantis pavyzdys: https://tinyfilemanager.github.io/demo/
 
